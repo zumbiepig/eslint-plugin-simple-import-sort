@@ -7,7 +7,7 @@
     "posttest": "npm run build",
     "build": "node build.js",
     "dogfood": "eslint --rulesdir src --config .eslintrc.dogfood.json test",
-    "examples": "eslint --rulesdir src --no-ignore --fix-dry-run --format json --report-unused-disable-directives examples --ext .js,.ts,.vue,.md"
+    "examples": "eslint --rulesdir src --no-ignore --fix-dry-run --format json --report-unused-disable-directives examples --ext .js,.mjs,.ts,.mts,.vue,.md"
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.23.10",

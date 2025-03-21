@@ -1,11 +1,11 @@
 {
   "name": "eslint-plugin-simple-import-sort",
-  "version": "12.1.1",
+  "version": "13.0.0",
   "license": "MIT",
   "author": "Simon Lydell",
-  "repository": "lydell/eslint-plugin-simple-import-sort",
+  "repository": "github:lydell/eslint-plugin-simple-import-sort",
   "description": "Easy autofixable import sorting",
-  "type": "commonjs",
+  "type": "module",
   "keywords": [
     "eslint",
     "eslint-plugin",
@@ -18,6 +18,9 @@
     "sorting"
   ],
   "peerDependencies": {
-    "eslint": ">=5.0.0"
+    "eslint": ">=9.0.0"
+  },
+  "dependencies": {
+    "eslint-plugin-import": "^2.31.0"
   }
 }

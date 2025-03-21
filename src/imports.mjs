@@ -1,44 +1,11 @@
 "use strict";
 
-const shared = require("./shared");
+import shared from "./shared.mjs";
 
-const defaultGroups = [
-  // Side effect imports.
-  ["^\\u0000"],
-  // Node.js builtins prefixed with `node:`.
-  ["^node:"],
-  // Packages.
-  // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
-  ["^@?\\w"],
-  // Absolute imports and other imports such as Vue-style `@/foo`.
-  // Anything not matched in another group.
-  ["^"],
-  // Relative imports.
-  // Anything that starts with a dot.
-  ["^\\."],
-];
-
-module.exports = {
+export default {
   meta: {
     type: "layout",
     fixable: "code",
-    schema: [
-      {
-        type: "object",
-        properties: {
-          groups: {
-            type: "array",
-            items: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-            },
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
     docs: {
       url: "https://github.com/lydell/eslint-plugin-simple-import-sort#sort-order",
       description: "Automatically sort imports.",
@@ -46,9 +13,41 @@ module.exports = {
     messages: {
       sort: "Run autofix to sort these imports!",
     },
+    schema: [{
+      type: "object",
+      properties: {
+        groups: {
+          type: "array",
+          items: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
+        },
+      },
+      additionalProperties: false,
+    }],
+    defaultOptions: [{
+      groups: [
+        // Side effect imports.
+        ["^\\u0000"],
+        // Node.js builtins prefixed with `node:`.
+        ["^node:"],
+        // Packages.
+        // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+        ["^@?\\w"],
+        // Absolute imports and other imports such as Vue-style `@/foo`.
+        // Anything not matched in another group.
+        ["^"],
+        // Relative imports.
+        // Anything that starts with a dot.
+        ["^\\."],
+      ],
+    }],
   },
-  create: (context) => {
-    const { groups: rawGroups = defaultGroups } = context.options[0] || {};
+  create: function (context) {
+    const { groups: rawGroups } = context.options[0] || {};
 
     const outerGroups = rawGroups.map((groups) =>
       groups.map((item) => RegExp(item, "u")),
@@ -76,7 +75,7 @@ module.exports = {
 };
 
 function maybeReportChunkSorting(chunk, context, outerGroups) {
-  const sourceCode = shared.getSourceCode(context);
+  const sourceCode = context.sourceCode;
   const items = shared.getImportExportItems(
     chunk,
     sourceCode,
@@ -103,10 +102,9 @@ function makeSortedItems(items, outerGroups) {
       : item.source.kind !== "value"
         ? `${originalSource}\0`
         : originalSource;
-    const [matchedGroup] = shared
-      .flatMap(itemGroups, (groups) =>
-        groups.map((group) => [group, group.regex.exec(source)]),
-      )
+    const [matchedGroup] = itemGroups
+      .flatMap((groups) =>
+        groups.map((group) => [group, group.regex.exec(source)]))
       .reduce(
         ([group, longestMatch], [nextGroup, nextMatch]) =>
           nextMatch != null &&

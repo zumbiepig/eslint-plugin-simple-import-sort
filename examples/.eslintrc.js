@@ -245,7 +245,7 @@ module.exports = {
     },
     {
       // TypeScript.
-      files: ["*.ts"],
+      files: ["*.ts", "*.mts"],
       parser: "@typescript-eslint/parser",
     },
     {

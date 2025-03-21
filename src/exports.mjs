@@ -1,12 +1,11 @@
 "use strict";
 
-const shared = require("./shared");
+import shared from "./shared.mjs";
 
-module.exports = {
+export default {
   meta: {
     type: "layout",
     fixable: "code",
-    schema: [],
     docs: {
       url: "https://github.com/lydell/eslint-plugin-simple-import-sort#sort-order",
       description: "Automatically sort exports.",
@@ -15,7 +14,7 @@ module.exports = {
       sort: "Run autofix to sort these exports!",
     },
   },
-  create: (context) => {
+  create: function (context) {
     const parents = new Set();
 
     const addParent = (node) => {
@@ -36,7 +35,7 @@ module.exports = {
       ExportAllDeclaration: addParent,
 
       "Program:exit": () => {
-        const sourceCode = shared.getSourceCode(context);
+        const sourceCode = context.sourceCode;
         for (const parent of parents) {
           for (const chunk of shared.extractChunks(parent, (node, lastNode) =>
             isPartOfChunk(node, lastNode, sourceCode),
@@ -51,7 +50,7 @@ module.exports = {
 };
 
 function maybeReportChunkSorting(chunk, context) {
-  const sourceCode = shared.getSourceCode(context);
+  const sourceCode = context.sourceCode;
   const items = shared.getImportExportItems(
     chunk,
     sourceCode,
@@ -68,7 +67,7 @@ function maybeReportChunkSorting(chunk, context) {
 function maybeReportExportSpecifierSorting(node, context) {
   const sorted = shared.printWithSortedSpecifiers(
     node,
-    shared.getSourceCode(context),
+    context.sourceCode,
     getSpecifiers,
   );
   const [start, end] = node.range;

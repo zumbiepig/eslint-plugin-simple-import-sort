@@ -2,7 +2,7 @@
 
 // A “chunk” is a sequence of statements of a certain type with only comments
 // and whitespace between.
-function extractChunks(parentNode, isPartOfChunk) {
+export function extractChunks(parentNode, isPartOfChunk) {
   const chunks = [];
   let chunk = [];
   let lastNode = undefined;
@@ -44,8 +44,8 @@ function extractChunks(parentNode, isPartOfChunk) {
   return chunks;
 }
 
-function maybeReportSorting(context, sorted, start, end) {
-  const sourceCode = getSourceCode(context);
+export function maybeReportSorting(context, sorted, start, end) {
+  const sourceCode = context.sourceCode;
   const original = sourceCode.getText().slice(start, end);
   if (original !== sorted) {
     context.report({
@@ -59,7 +59,7 @@ function maybeReportSorting(context, sorted, start, end) {
   }
 }
 
-function printSortedItems(sortedItems, originalItems, sourceCode) {
+export function printSortedItems(sortedItems, originalItems, sourceCode) {
   const newline = guessNewline(sourceCode);
 
   const sorted = sortedItems
@@ -73,7 +73,7 @@ function printSortedItems(sortedItems, originalItems, sourceCode) {
   // Edge case: If the last import/export (after sorting) ends with a line
   // comment and there’s code (or a multiline block comment) on the same line,
   // add a newline so we don’t accidentally comment stuff out.
-  const flattened = flatMap(sortedItems, (groups) => [].concat(...groups));
+  const flattened = sortedItems.flatMap((groups) => [].concat(...groups));
   const lastSortedItem = flattened[flattened.length - 1];
   const lastOriginalItem = originalItems[originalItems.length - 1];
   const nextToken = lastSortedItem.needsNewline
@@ -100,7 +100,7 @@ function printSortedItems(sortedItems, originalItems, sourceCode) {
 // the import/export. Most importantly there’s a `code` property that contains
 // the node as a string, with comments (if any). Finding the corresponding
 // comments is the hard part.
-function getImportExportItems(
+export function getImportExportItems(
   passedChunk,
   sourceCode,
   isSideEffectImport,
@@ -228,7 +228,7 @@ function handleLastSemicolon(chunk, sourceCode) {
   return chunk.slice(0, lastIndex).concat(newLastNode);
 }
 
-function printWithSortedSpecifiers(node, sourceCode, getSpecifiers) {
+export function printWithSortedSpecifiers(node, sourceCode, getSpecifiers) {
   const allTokens = getAllTokens(node, sourceCode);
   const openBraceIndex = allTokens.findIndex((token) =>
     isPunctuator(token, "{"),
@@ -267,7 +267,7 @@ function printWithSortedSpecifiers(node, sourceCode, getSpecifiers) {
   );
 
   const lastIndex = sortedItems.length - 1;
-  const sorted = flatMap(sortedItems, (item, index) => {
+  const sorted = sortedItems.flatMap((item, index) => {
     const previous = index === 0 ? undefined : sortedItems[index - 1];
 
     // Add a newline if the item needs one, unless the previous item (if any)
@@ -613,7 +613,7 @@ function removeBlankLines(whitespace) {
 function getAllTokens(node, sourceCode) {
   const tokens = sourceCode.getTokens(node);
   const lastTokenIndex = tokens.length - 1;
-  return flatMap(tokens, (token, tokenIndex) => {
+  return tokens.flatMap((token, tokenIndex) => {
     const newToken = { ...token, code: sourceCode.getText(token) };
 
     if (tokenIndex === lastTokenIndex) {
@@ -626,7 +626,7 @@ function getAllTokens(node, sourceCode) {
 
     return [
       newToken,
-      ...flatMap(comments, (comment, commentIndex) => {
+      ...comments.flatMap((comment, commentIndex) => {
         const previous =
           commentIndex === 0 ? token : comments[commentIndex - 1];
         return [
@@ -707,7 +707,7 @@ function getTrailingSpaces(node, sourceCode) {
   return lines[0];
 }
 
-function sortImportExportItems(items) {
+export function sortImportExportItems(items) {
   return items.slice().sort((itemA, itemB) =>
     // If both items are side effect imports, keep their original order.
     itemA.isSideEffectImport && itemB.isSideEffectImport
@@ -780,7 +780,7 @@ function isKeyword(node) {
   return node.type === "Keyword";
 }
 
-function isPunctuator(node, value) {
+export function isPunctuator(node, value) {
   return node.type === "Punctuator" && node.value === value;
 }
 
@@ -853,27 +853,3 @@ function findLastIndex(array, fn) {
   return -1;
   /* v8 ignore stop */
 }
-
-// Like `Array.prototype.flatMap`, had it been available.
-function flatMap(array, fn) {
-  return [].concat(...array.map(fn));
-}
-
-function getSourceCode(context) {
-  // `.getSourceCode()` is deprecated in favor of `.sourceCode`.
-  // We support both for now.
-  /* v8 ignore next */
-  return context.sourceCode || context.getSourceCode();
-}
-
-module.exports = {
-  extractChunks,
-  flatMap,
-  getImportExportItems,
-  getSourceCode,
-  isPunctuator,
-  maybeReportSorting,
-  printSortedItems,
-  printWithSortedSpecifiers,
-  sortImportExportItems,
-};

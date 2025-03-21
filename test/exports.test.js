@@ -1,7 +1,7 @@
 import { RuleTester } from "eslint";
 import { describe, expect, test } from "vitest";
 
-import plugin from "../src/index.js";
+import plugin from "../src/index.mjs";
 import { input, setup } from "./helpers.js";
 
 RuleTester.it = test;
