@@ -17,15 +17,6 @@ Easy autofixable import sorting.
 
 This is for those who use [`eslint --fix`][eslint-fix] (autofix) a lot and want to completely forget about sorting imports!
 
-[@typescript-eslint/parser]: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser
-[dprint-configuration]: https://github.com/lydell/eslint-plugin-simple-import-sort/#how-do-i-use-this-with-dprint
-[dprint]: https://dprint.dev/
-[eslint-fix]: https://eslint.org/docs/user-guide/command-line-interface#--fix
-[eslint-plugin-import]: https://github.com/import-js/eslint-plugin-import/
-[no-require]: https://github.com/lydell/eslint-plugin-simple-import-sort/#does-it-support-require
-[prettier]: https://prettier.io/
-[typescript]: https://www.typescriptlang.org/
-
 ## Example
 
 <!-- prettier-ignore -->
@@ -67,77 +58,114 @@ npm install --save-dev eslint-plugin-simple-import-sort
 
 > ℹ️ This is an [ESLint] plugin. 👉 [Getting Started with ESLint][eslint-getting-started]
 
+**Starting with v13, this plugin requires ESLint >=9.0.0, flat config, and ESM. If you are still using legacy config, stay on v12 for now.**
+
 ## Usage
 
-- [eslintrc]: Add `"simple-import-sort"` to the "plugins" array in your `.eslintrc.*` file, and add the rules for sorting imports and exports. By default ESLint doesn’t parse `import` syntax – the "parserOptions" is an example of how to enable that.
-
-  ```json
-  {
-    "plugins": ["simple-import-sort"],
-    "rules": {
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error"
-    },
-    "parserOptions": {
-      "sourceType": "module",
-      "ecmaVersion": "latest"
-    }
-  }
-  ```
-
-- [eslint.config.js (flat config)]: Import eslint-plugin-simple-import-sort, put it in the `plugins` object, and add the rules for sorting imports and exports. With flat config, `import` syntax is enabled by default.
+- [eslint.config.js]: Import eslint-plugin-simple-import-sort, and include the recommended preset.
 
   ```js
   import simpleImportSort from "eslint-plugin-simple-import-sort";
 
   export default [
+    simpleImportSort.configs.recommended,
     {
-      plugins: {
-        "simple-import-sort": simpleImportSort,
-      },
-      rules: {
-        "simple-import-sort/imports": "error",
-        "simple-import-sort/exports": "error",
-      },
+      // ...the rest of your configs
     },
   ];
   ```
 
-Make sure _not_ to use other sorting rules at the same time:
+This is the same as writing this:
+
+```js
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import import from "eslint-plugin-import";
+
+export default [
+  {
+    languageOptions: {
+      sourceType: "module",
+    },
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+      import: import,
+    },
+    rules: {
+      // Disable conflicting rules
+      "sort-imports": "off",
+      "import/order": "off",
+      // Enable imports/exports sorting
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+      // Import style
+      "import/first": "error",
+      "import/exports-last": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+    },
+  },
+];
+```
+
+The recommended preset also enables certain style rules from [eslint-plugin-import], which are optional:
+
+- [import/first] makes sure all imports are at the top of the file. (autofixable)
+- [import/newline-after-import] makes sure there’s a newline after the imports. (autofixable)
+- [import/no-duplicates] merges import statements of the same file. (autofixable, mostly)
+
+## Manual configuration
+
+- [eslint.config.js]: Import eslint-plugin-simple-import-sort, put it in the `plugins` object, and add the rules for sorting imports and exports.
+
+It is recommended to also set up [Prettier], to help formatting your imports (and all other code) nicely.
+
+```js
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+
+export default [
+  {
+    languageOptions: {
+      sourceType: "module",
+    },
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+    },
+    rules: {
+      "simple-import-sort/imports": ["error"],
+      "simple-import-sort/exports": [
+        "error",
+        {
+          groups: [
+            // Side effect imports.
+            ["^\\u0000"],
+            // Node.js builtins prefixed with `node:`.
+            ["^node:"],
+            // Packages.
+            // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+            ["^@?\\w"],
+            // Absolute imports and other imports such as Vue-style `@/foo`.
+            // Anything not matched in another group.
+            ["^"],
+            // Relative imports.
+            // Anything that starts with a dot.
+            ["^\\."],
+          ],
+        },
+      ],
+    },
+  },
+];
+```
+
+- `"sourceType": "module"` is needed so ESLint doesn’t report `import` and `export` as syntax errors.
+- `simple-import-sort/imports` and `simple-import-sort/exports` are turned on for all files.
+
+Make sure _not_ to use other sorting rules at the same time. The recommended preset will disable these conflicting rules for you by default:
 
 - [sort-imports]
 - [import/order]
 
-> ℹ️ Note: There used to be a rule called `"simple-import-sort/sort"`. Since version 6.0.0 it’s called `"simple-import-sort/imports"`.
-
-## Example configuration
-
-This example uses [eslint-plugin-import], which is optional.
-
-It is recommended to also set up [Prettier], to help formatting your imports (and all other code) nicely.
-
-```json
-{
-  "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": "latest"
-  },
-  "plugins": ["simple-import-sort", "import"],
-  "rules": {
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
-    "import/first": "error",
-    "import/newline-after-import": "error",
-    "import/no-duplicates": "error"
-  }
-}
-```
-
-- `"sourceType": "module"` and `"ecmaVersion": "latest"` are needed so ESLint doesn’t report `import` and `export` as syntax errors.
-- `simple-import-sort/imports` and `simple-import-sort/exports` are turned on for all files.
-- [import/first] makes sure all imports are at the top of the file. (autofixable)
-- [import/newline-after-import] makes sure there’s a newline after the imports. (autofixable)
-- [import/no-duplicates] merges import statements of the same file. (autofixable, mostly)
+> [!NOTE] There used to be a rule called `"simple-import-sort/sort"`. Since version 6.0.0 it’s called `"simple-import-sort/imports"`.
 
 ## Not for everyone
 
@@ -346,8 +374,15 @@ There is **one** option (see [Not for everyone]) called `groups` that is useful 
 `groups` is an array of arrays of strings:
 
 ```ts
-type Options = {
-  groups: Array<Array<string>>;
+type ESLintConfig = {
+  rules: {
+    "simple-import-sort/imports": [
+      "error",
+      {
+        groups: string[][];
+      },
+    ];
+  };
 };
 ```
 
@@ -701,14 +736,21 @@ For example, here’s the default value but changed to a single inner array:
 
 [MIT](LICENSE)
 
+[@typescript-eslint/parser]: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser
+[dprint-configuration]: https://github.com/lydell/eslint-plugin-simple-import-sort/#how-do-i-use-this-with-dprint
+[dprint]: https://dprint.dev/
+[eslint-fix]: https://eslint.org/docs/user-guide/command-line-interface#--fix
+[eslint-plugin-import]: https://github.com/import-js/eslint-plugin-import/
+[no-require]: https://github.com/lydell/eslint-plugin-simple-import-sort/#does-it-support-require
+[prettier]: https://prettier.io/
+[typescript]: https://www.typescriptlang.org/
 [`u` flag]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode
 [autofix]: #can-i-use-this-without-autofix
 [comment-handling]: #comment-and-whitespace-handling
 [custom grouping]: #custom-grouping
 [eslint-getting-started]: https://eslint.org/docs/user-guide/getting-started
-[eslint.config.js (flat config)]: https://eslint.org/docs/latest/use/configure/configuration-files-new
+[eslint.config.js]: https://eslint.org/docs/latest/use/configure/configuration-files-new
 [eslint]: https://eslint.org/
-[eslintrc]: https://eslint.org/docs/latest/use/configure/configuration-files
 [example-ignore]: ./examples/ignore.js
 [examples]: ./examples/.eslintrc.js
 [exports]: #exports

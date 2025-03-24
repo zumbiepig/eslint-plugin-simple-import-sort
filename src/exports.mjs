@@ -35,10 +35,9 @@ export default {
       ExportAllDeclaration: addParent,
 
       "Program:exit": () => {
-        const sourceCode = context.sourceCode;
         for (const parent of parents) {
           for (const chunk of shared.extractChunks(parent, (node, lastNode) =>
-            isPartOfChunk(node, lastNode, sourceCode),
+            isPartOfChunk(node, lastNode, context.sourceCode),
           )) {
             maybeReportChunkSorting(chunk, context);
           }
@@ -50,15 +49,14 @@ export default {
 };
 
 function maybeReportChunkSorting(chunk, context) {
-  const sourceCode = context.sourceCode;
   const items = shared.getImportExportItems(
     chunk,
-    sourceCode,
+    context.sourceCode,
     () => false, // isSideEffectImport
     getSpecifiers,
   );
   const sortedItems = [[shared.sortImportExportItems(items)]];
-  const sorted = shared.printSortedItems(sortedItems, items, sourceCode);
+  const sorted = shared.printSortedItems(sortedItems, items, context.sourceCode);
   const { start } = items[0];
   const { end } = items[items.length - 1];
   shared.maybeReportSorting(context, sorted, start, end);

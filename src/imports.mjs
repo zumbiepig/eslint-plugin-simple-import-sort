@@ -75,15 +75,14 @@ export default {
 };
 
 function maybeReportChunkSorting(chunk, context, outerGroups) {
-  const sourceCode = context.sourceCode;
   const items = shared.getImportExportItems(
     chunk,
-    sourceCode,
+    context.sourceCode,
     isSideEffectImport,
     getSpecifiers,
   );
   const sortedItems = makeSortedItems(items, outerGroups);
-  const sorted = shared.printSortedItems(sortedItems, items, sourceCode);
+  const sorted = shared.printSortedItems(sortedItems, items, context.sourceCode);
   const { start } = items[0];
   const { end } = items[items.length - 1];
   shared.maybeReportSorting(context, sorted, start, end);

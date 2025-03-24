@@ -22,7 +22,7 @@ Object.assign(eslintPluginSimpleImportSort.configs, {
     },
     plugins: {
       "simple-import-sort": eslintPluginSimpleImportSort,
-      "import": eslintPluginImport,
+      import: eslintPluginImport,
     },
     rules: {
       // Disable conflicting rules

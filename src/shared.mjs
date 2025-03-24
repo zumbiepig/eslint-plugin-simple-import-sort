@@ -45,14 +45,13 @@ export function extractChunks(parentNode, isPartOfChunk) {
 }
 
 export function maybeReportSorting(context, sorted, start, end) {
-  const sourceCode = context.sourceCode;
-  const original = sourceCode.getText().slice(start, end);
+  const original = context.sourceCode.getText().slice(start, end);
   if (original !== sorted) {
     context.report({
       messageId: "sort",
       loc: {
-        start: sourceCode.getLocFromIndex(start),
-        end: sourceCode.getLocFromIndex(end),
+        start: context.sourceCode.getLocFromIndex(start),
+        end: context.sourceCode.getLocFromIndex(end),
       },
       fix: (fixer) => fixer.replaceTextRange([start, end], sorted),
     });
