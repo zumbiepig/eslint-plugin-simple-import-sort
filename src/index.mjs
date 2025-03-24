@@ -7,7 +7,7 @@ const eslintPluginSimpleImportSort = {
     name: "eslint-plugin-simple-import-sort",
     version: "%VERSION%",
   },
-	configs: {},
+  configs: {},
   rules: {
     imports: importsRule,
     exports: exportsRule,
