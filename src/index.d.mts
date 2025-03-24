@@ -4,37 +4,37 @@ import eslintPluginImport from "eslint-plugin-import";
 
 declare const eslintPluginSimpleImportSort: {
   meta: {
-    name: "eslint-plugin-simple-import-sort",
-    version: string,
-  },
-  rules: {
-    imports: typeof importsRule,
-    exports: typeof exportsRule,
-  },
+    name: "eslint-plugin-simple-import-sort";
+    version: string;
+  };
   configs: {
     recommended: {
       languageOptions: {
-        sourceType: "module",
-      },
+        sourceType: "module";
+      };
       plugins: {
-        "simple-import-sort": typeof eslintPluginSimpleImportSort,
-        import: typeof eslintPluginImport,
-      },
+        "simple-import-sort": typeof eslintPluginSimpleImportSort;
+        import: typeof eslintPluginImport;
+      };
       rules: {
         // Disable conflicting rules
-        "sort-imports": "off",
-        "import/order": "off",
+        "sort-imports": "off";
+        "import/order": "off";
         // Enable imports/exports sorting
-        "simple-import-sort/imports": "error",
-        "simple-import-sort/exports": "error",
+        "simple-import-sort/imports": "error";
+        "simple-import-sort/exports": "error";
         // Import style
-        "import/first": "error",
-        "import/exports-last": "error",
-        "import/newline-after-import": "error",
-        "import/no-duplicates": "error",
-      },
-    },
-  },
+        "import/first": "error";
+        "import/exports-last": "error";
+        "import/newline-after-import": "error";
+        "import/no-duplicates": "error";
+      };
+    };
+  };
+  rules: {
+    imports: typeof importsRule;
+    exports: typeof exportsRule;
+  };
 };
 
 export default eslintPluginSimpleImportSort;

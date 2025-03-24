@@ -10,18 +10,18 @@
     "examples": "eslint --rulesdir src --no-ignore --fix-dry-run --format json --report-unused-disable-directives examples --ext .js,.mjs,.ts,.mts,.vue,.md"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.23.10",
-    "@babel/plugin-syntax-import-attributes": "^7.23.3",
-    "@babel/plugin-transform-flow-strip-types": "^7.23.3",
+    "@babel/eslint-parser": "^7.27.0",
+    "@babel/plugin-syntax-import-attributes": "^7.26.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.26.5",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitest/coverage-v8": "^1.2.2",
-    "eslint": "^8.56.0",
+    "@vitest/coverage-v8": "^1.6.1",
+    "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-markdown": "^3.0.1",
-    "eslint-plugin-vitest": "^0.3.22",
-    "eslint-plugin-vue": "^9.21.1",
+    "eslint-plugin-vitest": "^0.3.26",
+    "eslint-plugin-vue": "^9.33.0",
     "prettier": "^3.5.3",
-    "typescript": "^5.3.3",
+    "typescript": "^5.8.2",
     "vitest": "^1.6.1"
   }
 }

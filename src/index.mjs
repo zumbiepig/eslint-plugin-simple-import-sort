@@ -1,5 +1,3 @@
-"use strict";
-
 import importsRule from "./imports.mjs";
 import exportsRule from "./exports.mjs";
 import eslintPluginImport from "eslint-plugin-import";
@@ -9,6 +7,7 @@ const eslintPluginSimpleImportSort = {
     name: "eslint-plugin-simple-import-sort",
     version: "%VERSION%",
   },
+	configs: {},
   rules: {
     imports: importsRule,
     exports: exportsRule,
@@ -16,7 +15,7 @@ const eslintPluginSimpleImportSort = {
 };
 
 Object.assign(eslintPluginSimpleImportSort.configs, {
-	recommended: {
+  recommended: {
     languageOptions: {
       sourceType: "module",
     },
@@ -37,7 +36,7 @@ Object.assign(eslintPluginSimpleImportSort.configs, {
       "import/newline-after-import": "error",
       "import/no-duplicates": "error",
     },
-	},
+  },
 });
 
 export default eslintPluginSimpleImportSort;

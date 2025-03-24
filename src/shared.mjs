@@ -1,5 +1,3 @@
-"use strict";
-
 // A “chunk” is a sequence of statements of a certain type with only comments
 // and whitespace between.
 export function extractChunks(parentNode, isPartOfChunk) {

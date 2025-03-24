@@ -1,5 +1,3 @@
-"use strict";
-
 import shared from "./shared.mjs";
 
 export default {
@@ -14,7 +12,7 @@ export default {
       sort: "Run autofix to sort these exports!",
     },
   },
-  create: function (context) {
+  create(context) {
     const parents = new Set();
 
     const addParent = (node) => {
@@ -56,7 +54,11 @@ function maybeReportChunkSorting(chunk, context) {
     getSpecifiers,
   );
   const sortedItems = [[shared.sortImportExportItems(items)]];
-  const sorted = shared.printSortedItems(sortedItems, items, context.sourceCode);
+  const sorted = shared.printSortedItems(
+    sortedItems,
+    items,
+    context.sourceCode,
+  );
   const { start } = items[0];
   const { end } = items[items.length - 1];
   shared.maybeReportSorting(context, sorted, start, end);

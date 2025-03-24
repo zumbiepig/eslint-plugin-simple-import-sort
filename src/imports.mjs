@@ -1,5 +1,3 @@
-"use strict";
-
 import shared from "./shared.mjs";
 
 export default {
@@ -13,42 +11,46 @@ export default {
     messages: {
       sort: "Run autofix to sort these imports!",
     },
-    schema: [{
-      type: "object",
-      properties: {
-        groups: {
-          type: "array",
-          items: {
+    schema: [
+      {
+        type: "object",
+        properties: {
+          groups: {
             type: "array",
             items: {
-              type: "string",
+              type: "array",
+              items: {
+                type: "string",
+              },
+              uniqueItems: true,
             },
             uniqueItems: true,
           },
-          uniqueItems: true,
         },
+        additionalProperties: false,
       },
-      additionalProperties: false,
-    }],
-    defaultOptions: [{
-      groups: [
-        // Side effect imports.
-        ["^\\u0000"],
-        // Node.js builtins prefixed with `node:`.
-        ["^node:"],
-        // Packages.
-        // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
-        ["^@?\\w"],
-        // Absolute imports and other imports such as Vue-style `@/foo`.
-        // Anything not matched in another group.
-        ["^"],
-        // Relative imports.
-        // Anything that starts with a dot.
-        ["^\\."],
-      ],
-    }],
+    ],
+    defaultOptions: [
+      {
+        groups: [
+          // Side effect imports.
+          ["^\\u0000"],
+          // Node.js builtins prefixed with `node:`.
+          ["^node:"],
+          // Packages.
+          // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+          ["^@?\\w"],
+          // Absolute imports and other imports such as Vue-style `@/foo`.
+          // Anything not matched in another group.
+          ["^"],
+          // Relative imports.
+          // Anything that starts with a dot.
+          ["^\\."],
+        ],
+      },
+    ],
   },
-  create: function (context) {
+  create(context) {
     const { groups: rawGroups } = context.options[0] || {};
 
     const outerGroups = rawGroups.map((groups) =>
@@ -84,7 +86,11 @@ function maybeReportChunkSorting(chunk, context, outerGroups) {
     getSpecifiers,
   );
   const sortedItems = makeSortedItems(items, outerGroups);
-  const sorted = shared.printSortedItems(sortedItems, items, context.sourceCode);
+  const sorted = shared.printSortedItems(
+    sortedItems,
+    items,
+    context.sourceCode,
+  );
   const { start } = items[0];
   const { end } = items[items.length - 1];
   shared.maybeReportSorting(context, sorted, start, end);
@@ -105,7 +111,8 @@ function makeSortedItems(items, outerGroups) {
         : originalSource;
     const [matchedGroup] = itemGroups
       .flatMap((groups) =>
-        groups.map((group) => [group, group.regex.exec(source)]))
+        groups.map((group) => [group, group.regex.exec(source)]),
+      )
       .reduce(
         ([group, longestMatch], [nextGroup, nextMatch]) =>
           nextMatch != null &&
