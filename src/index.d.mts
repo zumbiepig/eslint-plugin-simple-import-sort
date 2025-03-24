@@ -1,7 +1,8 @@
 import importsRule from "./imports.mjs";
 import exportsRule from "./exports.mjs";
+import eslintPluginImport from "eslint-plugin-import";
 
-type plugin = {
+declare const eslintPluginSimpleImportSort: {
   meta: {
     name: "eslint-plugin-simple-import-sort",
     version: string,
@@ -16,8 +17,8 @@ type plugin = {
         sourceType: "module",
       },
       plugins: {
-        "simple-import-sort": plugin,
-        import: plugin,
+        "simple-import-sort": typeof eslintPluginSimpleImportSort,
+        import: typeof eslintPluginImport,
       },
       rules: {
         // Disable conflicting rules
@@ -35,7 +36,5 @@ type plugin = {
     },
   },
 };
-
-declare const eslintPluginSimpleImportSort: plugin;
 
 export default eslintPluginSimpleImportSort;

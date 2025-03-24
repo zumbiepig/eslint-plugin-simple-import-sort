@@ -23,7 +23,9 @@ export default {
             items: {
               type: "string",
             },
+            uniqueItems: true,
           },
+          uniqueItems: true,
         },
       },
       additionalProperties: false,
