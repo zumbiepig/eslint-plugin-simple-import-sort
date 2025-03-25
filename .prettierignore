@@ -1,3 +1,5 @@
 build
 coverage
 examples
+!examples/eslint.config.mjs
+!examples/README.md

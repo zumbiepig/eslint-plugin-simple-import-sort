@@ -1,8 +1,9 @@
-import importsRule from "./imports.mjs";
-import exportsRule from "./exports.mjs";
-import eslintPluginImport from "eslint-plugin-import";
+import importPlugin from "eslint-plugin-import";
 
-const eslintPluginSimpleImportSort = {
+import * as exportsRule from "./exports.js";
+import * as importsRule from "./imports.js";
+
+const simpleImportSort = {
   meta: {
     name: "eslint-plugin-simple-import-sort",
     version: "%VERSION%",
@@ -14,14 +15,14 @@ const eslintPluginSimpleImportSort = {
   },
 };
 
-Object.assign(eslintPluginSimpleImportSort.configs, {
+Object.assign(simpleImportSort.configs, {
   recommended: {
     languageOptions: {
       sourceType: "module",
     },
     plugins: {
-      "simple-import-sort": eslintPluginSimpleImportSort,
-      import: eslintPluginImport,
+      "simple-import-sort": simpleImportSort,
+      import: importPlugin,
     },
     rules: {
       // Disable conflicting rules
@@ -39,4 +40,4 @@ Object.assign(eslintPluginSimpleImportSort.configs, {
   },
 });
 
-export default eslintPluginSimpleImportSort;
+export default simpleImportSort;

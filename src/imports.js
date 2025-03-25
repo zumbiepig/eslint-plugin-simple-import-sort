@@ -1,82 +1,80 @@
-import shared from "./shared.mjs";
+import * as shared from "./shared.js";
 
-export default {
-  meta: {
-    type: "layout",
-    fixable: "code",
-    docs: {
-      url: "https://github.com/lydell/eslint-plugin-simple-import-sort#sort-order",
-      description: "Automatically sort imports.",
-    },
-    messages: {
-      sort: "Run autofix to sort these imports!",
-    },
-    schema: [
-      {
-        type: "object",
-        properties: {
-          groups: {
+export const meta = {
+  type: "layout",
+  fixable: "code",
+  docs: {
+    url: "https://github.com/lydell/eslint-plugin-simple-import-sort#sort-order",
+    description: "Automatically sort imports.",
+  },
+  messages: {
+    sort: "Run autofix to sort these imports!",
+  },
+  schema: [
+    {
+      type: "object",
+      properties: {
+        groups: {
+          type: "array",
+          items: {
             type: "array",
             items: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-              uniqueItems: true,
+              type: "string",
             },
             uniqueItems: true,
           },
+          uniqueItems: true,
         },
-        additionalProperties: false,
       },
-    ],
-    defaultOptions: [
-      {
-        groups: [
-          // Side effect imports.
-          ["^\\u0000"],
-          // Node.js builtins prefixed with `node:`.
-          ["^node:"],
-          // Packages.
-          // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
-          ["^@?\\w"],
-          // Absolute imports and other imports such as Vue-style `@/foo`.
-          // Anything not matched in another group.
-          ["^"],
-          // Relative imports.
-          // Anything that starts with a dot.
-          ["^\\."],
-        ],
-      },
-    ],
-  },
-  create(context) {
-    const { groups: rawGroups } = context.options[0] || {};
-
-    const outerGroups = rawGroups.map((groups) =>
-      groups.map((item) => RegExp(item, "u")),
-    );
-
-    const parents = new Set();
-
-    return {
-      ImportDeclaration: (node) => {
-        parents.add(node.parent);
-      },
-
-      "Program:exit": () => {
-        for (const parent of parents) {
-          for (const chunk of shared.extractChunks(parent, (node) =>
-            isImport(node) ? "PartOfChunk" : "NotPartOfChunk",
-          )) {
-            maybeReportChunkSorting(chunk, context, outerGroups);
-          }
-        }
-        parents.clear();
-      },
-    };
-  },
+      additionalProperties: false,
+    },
+  ],
+  defaultOptions: [
+    {
+      groups: [
+        // Side effect imports.
+        ["^\\u0000"],
+        // Node.js builtins prefixed with `node:`.
+        ["^node:"],
+        // Packages.
+        // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+        ["^@?\\w"],
+        // Absolute imports and other imports such as Vue-style `@/foo`.
+        // Anything not matched in another group.
+        ["^"],
+        // Relative imports.
+        // Anything that starts with a dot.
+        ["^\\."],
+      ],
+    },
+  ],
 };
+export function create(context) {
+  const { groups: rawGroups } = context.options[0] || {};
+
+  const outerGroups = rawGroups.map((groups) =>
+    groups.map((item) => RegExp(item, "u")),
+  );
+
+  const parents = new Set();
+
+  return {
+    ImportDeclaration: (node) => {
+      parents.add(node.parent);
+    },
+
+    "Program:exit": () => {
+      for (const parent of parents) {
+        for (const chunk of shared.extractChunks(parent, (node) =>
+          isImport(node) ? "PartOfChunk" : "NotPartOfChunk",
+        )) {
+          maybeReportChunkSorting(chunk, context, outerGroups);
+        }
+      }
+      parents.clear();
+    },
+  };
+}
 
 function maybeReportChunkSorting(chunk, context, outerGroups) {
   const items = shared.getImportExportItems(

@@ -51,6 +51,8 @@ import {
 
 `;
 
+exports[`examples > eslint.config.mjs 1`] = `undefined`;
+
 exports[`examples > eslint-plugin-import.js 1`] = `
 // This file uses rules from eslint-plugin-import
 // (https://github.com/benmosher/eslint-plugin-import/) if you want hoist

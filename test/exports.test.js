@@ -1,7 +1,9 @@
+import babelParser from "@babel/eslint-parser";
+import tsParser from "@typescript-eslint/parser";
 import { RuleTester } from "eslint";
 import { describe, expect, test } from "vitest";
 
-import plugin from "../src/index.mjs";
+import plugin from "../src/index.js";
 import { input, setup } from "./helpers.js";
 
 RuleTester.it = test;
@@ -1162,16 +1164,20 @@ const typescriptTests = {
 };
 
 const javascriptRuleTester = new RuleTester({
-  parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+  languageOptions: { ecmaVersion: 2020, sourceType: "module" },
 });
 
 const flowRuleTester = new RuleTester({
-  parser: require.resolve("@babel/eslint-parser"),
+  languageOptions: {
+    parser: babelParser,
+  },
 });
 
 const typescriptRuleTester = new RuleTester({
-  parser: require.resolve("@typescript-eslint/parser"),
-  parserOptions: { sourceType: "module" },
+  languageOptions: {
+    parser: tsParser,
+    sourceType: "module",
+  },
 });
 
 javascriptRuleTester.run("JavaScript", plugin.rules.exports, baseTests(expect));

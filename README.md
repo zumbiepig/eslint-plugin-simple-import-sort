@@ -752,7 +752,7 @@ For example, here’s the default value but changed to a single inner array:
 [eslint.config.js]: https://eslint.org/docs/latest/use/configure/configuration-files-new
 [eslint]: https://eslint.org/
 [example-ignore]: ./examples/ignore.js
-[examples]: ./examples/.eslintrc.js
+[examples]: ./examples/eslint.config.mjs
 [exports]: #exports
 [flow]: https://flow.org/
 [import/first]: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/first.md

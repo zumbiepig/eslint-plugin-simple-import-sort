@@ -1,8 +1,8 @@
-import importsRule from "./imports.mjs";
-import exportsRule from "./exports.mjs";
-import eslintPluginImport from "eslint-plugin-import";
+import * as importsRule from "./imports.js";
+import * as exportsRule from "./exports.js";
+import importPlugin from "eslint-plugin-import";
 
-declare const eslintPluginSimpleImportSort: {
+declare const simpleImportSort: {
   meta: {
     name: "eslint-plugin-simple-import-sort";
     version: string;
@@ -13,8 +13,8 @@ declare const eslintPluginSimpleImportSort: {
         sourceType: "module";
       };
       plugins: {
-        "simple-import-sort": typeof eslintPluginSimpleImportSort;
-        import: typeof eslintPluginImport;
+        "simple-import-sort": typeof simpleImportSort;
+        import: typeof importPlugin;
       };
       rules: {
         // Disable conflicting rules
@@ -37,4 +37,4 @@ declare const eslintPluginSimpleImportSort: {
   };
 };
 
-export default eslintPluginSimpleImportSort;
+export default simpleImportSort;

@@ -1,50 +1,48 @@
-import shared from "./shared.mjs";
+import * as shared from "./shared.js";
 
-export default {
-  meta: {
-    type: "layout",
-    fixable: "code",
-    docs: {
-      url: "https://github.com/lydell/eslint-plugin-simple-import-sort#sort-order",
-      description: "Automatically sort exports.",
-    },
-    messages: {
-      sort: "Run autofix to sort these exports!",
-    },
+export const meta = {
+  type: "layout",
+  fixable: "code",
+  docs: {
+    url: "https://github.com/lydell/eslint-plugin-simple-import-sort#sort-order",
+    description: "Automatically sort exports.",
   },
-  create(context) {
-    const parents = new Set();
-
-    const addParent = (node) => {
-      if (isExportFrom(node)) {
-        parents.add(node.parent);
-      }
-    };
-
-    return {
-      ExportNamedDeclaration: (node) => {
-        if (node.source == null && node.declaration == null) {
-          maybeReportExportSpecifierSorting(node, context);
-        } else {
-          addParent(node);
-        }
-      },
-
-      ExportAllDeclaration: addParent,
-
-      "Program:exit": () => {
-        for (const parent of parents) {
-          for (const chunk of shared.extractChunks(parent, (node, lastNode) =>
-            isPartOfChunk(node, lastNode, context.sourceCode),
-          )) {
-            maybeReportChunkSorting(chunk, context);
-          }
-        }
-        parents.clear();
-      },
-    };
+  messages: {
+    sort: "Run autofix to sort these exports!",
   },
 };
+export function create(context) {
+  const parents = new Set();
+
+  const addParent = (node) => {
+    if (isExportFrom(node)) {
+      parents.add(node.parent);
+    }
+  };
+
+  return {
+    ExportNamedDeclaration: (node) => {
+      if (node.source == null && node.declaration == null) {
+        maybeReportExportSpecifierSorting(node, context);
+      } else {
+        addParent(node);
+      }
+    },
+
+    ExportAllDeclaration: addParent,
+
+    "Program:exit": () => {
+      for (const parent of parents) {
+        for (const chunk of shared.extractChunks(parent, (node, lastNode) =>
+          isPartOfChunk(node, lastNode, context.sourceCode),
+        )) {
+          maybeReportChunkSorting(chunk, context);
+        }
+      }
+      parents.clear();
+    },
+  };
+}
 
 function maybeReportChunkSorting(chunk, context) {
   const items = shared.getImportExportItems(
